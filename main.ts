@@ -1,28 +1,38 @@
-function setcolor () {
-    strip.showColor(colors[color])
-}
-input.onButtonPressed(Button.A, function () {
-    isOn = !(isOn)
-    if (isOn) {
-        setcolor()
+function testVictory () {
+    if (index == blueLEDIndex) {
+        strip.showColor(neopixel.colors(NeoPixelColors.Green))
     } else {
-        strip.clear()
-        strip.show()
+        strip.showColor(neopixel.colors(NeoPixelColors.Red))
     }
-})
-input.onGesture(Gesture.Shake, function () {
-    color += 1
-    color = color % colors.length
-    isOn = true
-    setcolor()
-})
-let isOn = false
-let color = 0
-let colors: number[] = []
+}
+function pickNewBlueLED () {
+    blueLEDIndex = randint(0, 9)
+    strip.clear()
+    range = strip.range(blueLEDIndex, 1)
+    range.showColor(neopixel.colors(NeoPixelColors.Blue))
+    basic.pause(1000)
+}
+let range: neopixel.Strip = null
+let blueLEDIndex = 0
+let index = 0
 let strip: neopixel.Strip = null
 strip = neopixel.create(DigitalPin.P1, 10, NeoPixelMode.RGB)
-strip.clear()
-strip.show()
-colors = [neopixel.colors(NeoPixelColors.Red), neopixel.colors(NeoPixelColors.Orange), neopixel.colors(NeoPixelColors.Yellow), neopixel.colors(NeoPixelColors.Green)]
-color = 0
-isOn = false
+let direction = 1
+index = 0
+pickNewBlueLED()
+basic.forever(function () {
+    strip.clear()
+    range = strip.range(index, 1)
+    range.showColor(neopixel.colors(NeoPixelColors.Red))
+    strip.show()
+    basic.pause(100)
+    if (input.buttonIsPressed(Button.A)) {
+        testVictory()
+        basic.pause(1000)
+        pickNewBlueLED()
+    }
+    index += direction
+    if ((index == 0 || index) == 9) {
+        direction = direction * -1
+    }
+})
